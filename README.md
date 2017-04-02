@@ -1,4 +1,4 @@
-# Net-Acme2-Perl6
+# Net::ACME2
 a Perl 6 Letsencrypt ACME client
 
 I currently have a working Perl 6 solution for a Letsencrypt ACME (Automated Certificate 
