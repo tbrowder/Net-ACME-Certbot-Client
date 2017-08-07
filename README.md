@@ -1,9 +1,9 @@
-# Net::AcmeClient
-a Perl 6 Let's Eencrypt ACME client
+# Net::ACME::Certbot::Client
+a Perl 6 Let's Encrypt ACME client that uses the **certbot** client as its ACME interface 
 
-This module provides a wrapper around and extends the excellent C program **acme-client** by ??.
-See http://?? for more details, source, and installations.
-It is developed on a Debian 8 Linux host but should work on any Linux or similar OS.
+This module provides a wrapper around and extends the excellent **certbot** client by
+adding tools for managing multiple certificates.
+It is developed on a Debian 8 (Jessie) Linux host but should work on any Linux or similar OS.
 
 ## Background
 
@@ -13,19 +13,14 @@ installed by package managers and couldn't easily be made to work with custom in
 To make matters worse, most documentation was lacking in implementation details sufficient
 for trouble-shooting.
 
-Finally, the excellent C client **acme-client** by ?? was tried and was found to meet all this author's
-requirements: transparent certificate file and directory structure, clear and detailed
-documentation, and single-certificate execution without dependencies on other installed certificates.
-In addition, ??'s serious atttention to security is a major benefit of his client.
+Finally, the author returned to the recommended client, **certbot**, and created wrappers to
+satisfy his needs.
 
-## Extension's to **acme-client**
+## Extensions to **certbot**
 
-1 Net::AcmeClient is designed for the user who manages multiple domains, so the collection
+1 Net::ACME::Certbot::Client is designed for the user who manages multiple domains, so the collection
   is treated as a group for status reporting and reissue. Status reporting is independent
-  of **acme-client** so it can be done by an ordinary user.
-
-2. To ensure the capability of handling multiple domains, the **-m** option to **acme-client**
-   is always used (the author has submitted a PR to make that the standard behavior).
+  of **certbot** so it can be done by an ordinary user.
 
 3. The user **may**  provide a configuration file to set desired options for his or her needs. A configuration file with
    the author's standard options is provided as a usable example shown below.
@@ -33,18 +28,14 @@ In addition, ??'s serious atttention to security is a major benefit of his clien
 4. The user **must** provide a separate text file with each line providing the domain name plus any alternate names
    for each certificate (names must be separated on the line). Note that the first domain name on each
    line defines the common name (CN) in the certificate
-   as well as the key for the database view by **Net::AcmeClient**. All names are treated as lower-case
+   as well as the key for the database view by **Net::ACME::Certbot::Client**. All names are treated as lower-case
    regardless of user-entry. An example file is shown below. 
 
 ## Dependencies
 
 + Proc::More (a published Perl 6 module to be installed by zef)
 
-+ acme-client (install from source developed on OpenBSD but ported to Linux and similar OSs)
-
-+ libbsd (install from source)
-
-+ LibreSSL (install from source)
++ certbot  (install per imstructions on its website)
 
 + OpenSSL (normally available on most OSs)
 
@@ -55,6 +46,11 @@ In addition, ??'s serious atttention to security is a major benefit of his clien
 
 
 ### Domain file (required)
+
+  example.com www.example.com mail.example.com
+  foo.net www.foo.net ns1.foo.net ns2.foo.net
+
+ 
 
 
 
