@@ -47,8 +47,10 @@ satisfy his needs.
 
 ### Domain file (required)
 
-  example.com www.example.com mail.example.com
-  foo.net www.foo.net ns1.foo.net ns2.foo.net
+```
+example.com www.example.com mail.example.com
+foo.net www.foo.net ns1.foo.net ns2.foo.net
+```
 
  
 
