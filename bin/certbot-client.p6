@@ -65,6 +65,7 @@ for @*ARGS {
     when /^ t  / { $test    = 1; }
     when /^ v  / { $verbose = 1; }
     when /^ l  / { $log     = 1; }
+    =begin comment
     when /^ 'D=' / {
        $D = 1;
        my $a = $_;
@@ -90,6 +91,7 @@ for @*ARGS {
            }
        }
     }
+    =end comment
     default {
         say "FATAL: Unknown arg '$_'.";
         exit;
@@ -97,6 +99,7 @@ for @*ARGS {
 }
 
 help if $help;
+=begin comment
 if $D && !%udoms {
     say "FATAL: No known domains entered with the 'D=' option.";
     exit;
@@ -104,16 +107,19 @@ if $D && !%udoms {
 else {
     %udoms = %doms;
 }
+=end comment
 
 # a convenience var:
 my $view = $debug || $verbose;
 
+=begin comment
 # for now set log default for report and auto
 $log = 1 if $report || $auto;
 if $log {
     my $f = "$LOGDIR/manip-certs.log";
     $log = open $f, :a;
 }
+=end comment
 
 # now execute per chosen mode
 {
@@ -514,11 +520,38 @@ sub help {
     exit;
 }
 
+sub read-domains() {
+    my $f = $domains;
+    return if !$f.IO.f;
+    my %doms;
+    for $f.IO.lines -> $line {
+        $line = lc strip-comment($line);
+        next if $line !~~ /\S/ 
+        my @words = $line.words;
+        my $dom = @words[0];
+        # default is to have first name DOMAIN.TLD
+        my @d = split('.', $dom, :skip-empty);
+        die "FATAL: first domain '$dom' is not in DOMAIN.TLD format" if @d.elems != 2;
+        # ensure we have "www.DOMAIN.TLD"
+        @words.append: "www.$dom";
+        my @doms = unique @words;
+        $dom = shift @doms;
+        # check for uniqueness as a key
+        if %doms{$dom}.exists {
+            die "FATAL:  Domain '$dom' is not a unique key.";
+        }
+        %doms{$dom} = [flat @doms];
+    }
+    return %doms;
+}
+
 sub read-client-config() {
-    my $f = $client-config;    
+    my $f = $client-config;
     return if !$f.IO.f;
     my $in-certbot = 0;
-    for $client-config.IO.lines -> $line {
+    for $f.IO.lines -> $line is copy {
+        $line = lc strip-comment($line);
+        next if $line !~~ /\S/ 
         my @words = $line.words;
         my $key = shift @words;
         $key .= lc;
@@ -534,13 +567,15 @@ sub read-client-config() {
         if %known-options{$key}.exists {
             # does it have leading hyphens?
             if $key ~~ /^ '-' / && !$in-certbot {
-                die "FATAL:  Key '$key' is not a known acme-certbot-client option."; 
+                die "FATAL:  Key '$key' is not a known acme-certbot-client option.";
             }
+	    my $typ = %known-options{$key};
+	    die "fix this";
         }
         else {
             die "FATAL:  Unknown client configuration option '$key'.";
-        }   
-    
+        }
+
         # what now???
 }
 
@@ -552,18 +587,15 @@ BEGIN {
 
         # certbot options
         # distinguished by leading hyphen(s)
---test-cert
---dry-run
---debug
---webroot
--vvv
---non-interactive
---preferred-challenges => 'list',
---must-staple
---rsa-key-size => 'uint',
---agree-tos
-
-        
+	'--test-cert' => '',
+	'--dry-run' => '',
+	'--debug' => '',
+	'--webroot' => '',
+	'-vvv' => '',
+	'--non-interactive' => '',
+	'--preferred-challenges => 'list',
+	'--must-staple' => '',
+	'--rsa-key-size => 'uint',
+	'--agree-tos' => '',
     ];
 }
-
