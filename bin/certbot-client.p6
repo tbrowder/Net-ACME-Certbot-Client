@@ -12,12 +12,15 @@ my $client-config = "/etc/acme-certbot-client/config";
 my $certbot-dir   = "/etc/letsencrypt";
 #die "FATAL: Unknown dir '$sdir'" if !$sdir.IO.d;
 
-# 5 modes
+# 6 modes
 my $report = 0; # report cert status
 my $auto   = 0; # issue new if needed
 my $copy   = 0; # copy cert prods into place
 my $show   = 0; # show a list of long and short names of all domains
+                # also shows a list of subdomains
 my $check  = 0; # check and report on apache (httpd) run status
+my $issue  = 0; # catch-all issue command
+                # for now this just writes a script for each domain
 
 sub z {
     $report = 0; # report cert status
@@ -25,15 +28,19 @@ sub z {
     $copy   = 0; # copy cert prods into place
     $show   = 0; # show a list of long and short names of all domains
     $check  = 0; # check and report on apache (httpd) run status
+    $issue  = 0; # catch-all issue command
+                 # for now this just writes a script for each domain
 }
 
 # 8 options
+# issue options
 my $force   = 0; # force issue even if valid
+my $test    = 0; # use the acme test (stage) server
+my $D       = 0; # input subset of known domains
+# other options
 my $exe     = 0; # needed to allow file system changes
 my $debug   = 0;
-my $test    = 0; # use the acme test (stage) server
 my $verbose = 0;
-my $D       = 0; # input subset of known domains
 my $help    = 0; # really a mode, but handled a bit differently at the moment
 my $log     = 0;
 
@@ -51,15 +58,16 @@ if !@*ARGS {
     exit;
 }
 
-%doms = read-domains($domain-list, :debug(1));
+%doms = read-domains($domain-list, :debug(0));
 read-client-config($client-config);
 for @*ARGS {
-    # 5 modes ('z' is a sub that zeroes all mode args)
+    # 6 modes ('z' is a sub that zeroes all mode args)
     when /^ ch / { z; $check   = 1; }
     when /^ co / { z; $copy    = 1; }
     when /^ a  / { z; $auto    = 1; }
     when /^ r  / { z; $report  = 1; }
     when /^ s  / { z; $show    = 1; }
+    when /^ i  / { z; $issue   = 1; }
 
     # 8 options
     when /^ e  / { $exe     = 1; }
@@ -128,6 +136,7 @@ if $log {
     when so $report { report }
     when so $auto   { auto }
     when so $show   { list-domains(%doms) }
+    when so $issue  { write-cert-issue-scripts(%doms) }
 }
 
 say "\nNormal end." if $view;
@@ -218,10 +227,15 @@ sub list-domains(%doms) {
         $max = $len if $len > $max;
     }
 
+    say "CN domains and subdomains:";
     for @doms -> $d {
         say "DEBUG: domain '$d'" if $debug;
         my $abbrev = %word-abbrev{$d};
         printf "%-*.*s  %-s\n", $max, $max, $d, $abbrev;
+        my @sd = @(%doms{$d});
+        for @sd -> $sd {
+            say "  => $sd";
+        }
     }
     log-msg "-- Exiting sub '&?ROUTINE.name'...";
 }
@@ -289,6 +303,7 @@ sub help {
       co - copy cert prods into place
       s  - show a list of long and short names of all domains
       ch - check and report on apache (httpd) run status
+      i  - write certbot script for each CN domain
 
     options:
       f     force issue even if valid
@@ -376,6 +391,36 @@ sub read-client-config($client-config-file) {
         }
 
         # what now???
+    }
+}
+
+sub write-cert-issue-scripts(%doms) {
+    for %doms.kv -> $d, $s {
+        my @sd = @($s);
+        my $script = "certbot-issue-request-$d.sh";
+        my $fh = open($script, :w);
+
+        # option flags
+        my $o1 = $force ?? '--force' !! '';
+        my $o2 = '--must-staple';
+        my $o3 = $test ?? '--test-cert' !! '';
+        my $o4 = '--non-interactive';
+        my $o5 = '--webroot';
+        my $o6 = '--agree-tos';
+        
+        $fh.printf: "#!/bin/bash\n";
+        $fh.printf: "certbot issue $o1 $o2 $o3 $o4 $o5 $o6 -d $d"; # no newline!
+        for @sd -> $sd {
+            $fh.print: " -d $sd";
+        }
+        $fh.print-nl;
+
+        if $debug {
+            say "Working CN domain '$d' and its subdomains:";
+            for @sd -> $sd {
+               say "  $sd";
+            }
+        }
     }
 }
 
