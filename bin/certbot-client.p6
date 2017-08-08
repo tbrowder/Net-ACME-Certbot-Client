@@ -51,7 +51,8 @@ if !@*ARGS {
     exit;
 }
 
-%doms = read-domains;
+%doms = read-domains($domain-list);
+read-client-config($client-config);
 for @*ARGS {
     # 5 modes ('z' is a sub that zeroes all mode args)
     when /^ ch / { z; $check   = 1; }
@@ -303,10 +304,10 @@ sub help {
     exit;
 }
 
-sub read-domains() {
-    my $f = $domain-list;
-    return if !$f.IO.f;
+sub read-domains($domain-list-fname) {
+    my $f = $domain-list-fname;
     my %doms;
+    return %doms if !$f.IO.f;
     for $f.IO.lines -> $line {
         $line = lc strip-comment($line);
         next if $line !~~ /\S/;
@@ -328,8 +329,8 @@ sub read-domains() {
     return %doms;
 }
 
-sub read-client-config() {
-    my $f = $client-config;
+sub read-client-config($client-config-file) {
+    my $f = $client-config-file;
     return if !$f.IO.f;
     my $in-certbot = 0;
     for $f.IO.lines -> $line is copy {
