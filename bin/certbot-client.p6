@@ -51,7 +51,7 @@ if !@*ARGS {
     exit;
 }
 
-%doms = read-domains($domain-list);
+%doms = read-domains($domain-list, :debug(1));
 read-client-config($client-config);
 for @*ARGS {
     # 5 modes ('z' is a sub that zeroes all mode args)
@@ -93,7 +93,7 @@ for @*ARGS {
                }
            }
        }
-   }
+    }
     default {
         say "FATAL: Unknown arg '$_'.";
         exit;
@@ -127,7 +127,7 @@ if $log {
     #when so $copy   { copy-files }
     when so $report { report }
     when so $auto   { auto }
-    when so $show   { list-domains: %doms }
+    when so $show   { list-domains(%doms) }
 }
 
 say "\nNormal end." if $view;
@@ -202,8 +202,15 @@ sub report {
 }
 
 sub list-domains(%doms) {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
-    my @doms = %sdoms.keys.sort;
+    log-msg "-- Entering sub 'list-domains'...";
+    say "DEBUG: -- Entering sub 'list-domains'..." if $debug;
+    say %doms.gist if $debug;
+    say "WARNING: \%doms has no elements" if !%doms.elems;
+    # need abbrevs
+    my %word-abbrev;
+    my %abbrev-word;
+    abbrev(%doms, :%word-abbrev, :%abbrev-word);
+    my @doms = %doms.keys.sort;
     # two passes to get nice formatting
     my $max = 0;
     for @doms -> $d {
@@ -212,8 +219,9 @@ sub list-domains(%doms) {
     }
 
     for @doms -> $d {
-        my $short = %sdoms{$d};
-        printf "%-*.*s  %-s\n", $max, $max, $d, $short;
+        say "DEBUG: domain '$d'" if $debug;
+        my $abbrev = %word-abbrev{$d};
+        printf "%-*.*s  %-s\n", $max, $max, $d, $abbrev;
     }
     log-msg "-- Exiting sub '&?ROUTINE.name'...";
 }
@@ -304,13 +312,18 @@ sub help {
     exit;
 }
 
-sub read-domains($domain-list-fname) {
+sub read-domains($domain-list-fname, :$debug) {
+    say "DEBUG: in sub '&?ROUTINE.name'" if $debug;
     my $f = $domain-list-fname;
     my %doms;
-    return %doms if !$f.IO.f;
+    if !$f.IO.f {
+        say "WARNING: Domain file '$f' not found.";
+        return %doms;
+    }
     for $f.IO.lines -> $line is copy {
         $line = lc strip-comment($line);
         next if $line !~~ /\S/;
+        say "DEBUG: line = '$line'" if $debug;
         my @words = $line.words;
         my $dom = @words[0];
         # default is to have first name DOMAIN.TLD
@@ -326,6 +339,8 @@ sub read-domains($domain-list-fname) {
         }
         %doms{$dom} = [flat @doms];
     }
+    say %doms.gist if $debug;
+    say "WARNING: \%doms has no elements" if !%doms.elems;
     return %doms;
 }
 

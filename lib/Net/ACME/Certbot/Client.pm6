@@ -211,7 +211,7 @@ sub collect-stats(:%adoms, :$certbot-dir, :%udoms, :$reissue = 30, :$view) is ex
     return %r;
 }
 
-sub abbrev(%words, %abbrev-word, %word-abbrev) is export(:abbrev) {
+sub abbrev(%words, :%abbrev-word, :%word-abbrev) is export(:abbrev) {
     # for a hash of words, computes minimum unique abbreviation
     # inspiration and code use from Text::Abbrev
     my $seen = SetHash.new;
