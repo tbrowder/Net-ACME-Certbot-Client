@@ -308,7 +308,7 @@ sub read-domains($domain-list-fname) {
     my $f = $domain-list-fname;
     my %doms;
     return %doms if !$f.IO.f;
-    for $f.IO.lines -> $line {
+    for $f.IO.lines -> $line is copy {
         $line = lc strip-comment($line);
         next if $line !~~ /\S/;
         my @words = $line.words;
@@ -321,7 +321,7 @@ sub read-domains($domain-list-fname) {
         my @doms = unique @words;
         $dom = shift @doms;
         # check for uniqueness as a key
-        if %doms{$dom}.exists {
+        if %doms{$dom}:exists {
             die "FATAL:  Domain '$dom' is not a unique key.";
         }
         %doms{$dom} = [flat @doms];
