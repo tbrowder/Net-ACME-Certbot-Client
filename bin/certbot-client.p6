@@ -395,25 +395,40 @@ sub read-client-config($client-config-file) {
 }
 
 sub write-cert-issue-scripts(%doms) {
+    my @ofils;
     for %doms.kv -> $d, $s {
         my @sd = @($s);
         my $script = "certbot-issue-request-$d.sh";
         my $fh = open($script, :w);
 
         # option flags
-        my $o1 = $force ?? '--force' !! '';
-        my $o2 = '--must-staple';
-        my $o3 = $test ?? '--test-cert' !! '';
-        my $o4 = '--non-interactive';
-        my $o5 = '--webroot';
-        my $o6 = '--agree-tos';
-        
+        my ($o1, $o2, $o3, $o4, $o5, $o6, $o7, $o8);
+        $o2 = '--must-staple';
+        $o4 = '--non-interactive';
+        $o5 = '--webroot';
+        $o6 = '--agree-tos';
+        $o7 = '-w /var/www/acme';
+        $o8 = '--redirect --hsts';
+        if 1 {
+            # for testing
+            $o1 = '--force';
+            $o3 = '--test-cert';
+        }
+        else {
+            # for real!
+            $o1 = $force ?? '--force' !! '';
+            $o3 = $test ?? '--test-cert' !! '';
+        } 
+
         $fh.printf: "#!/bin/bash\n";
-        $fh.printf: "certbot issue $o1 $o2 $o3 $o4 $o5 $o6 -d $d"; # no newline!
+        $fh.printf: "certbot run $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 -d $d"; # no newline!
         for @sd -> $sd {
             $fh.print: " -d $sd";
         }
         $fh.print-nl;
+        $fh.close;
+        $script.IO.chmod: 0o755;
+        @ofils.append: $script;
 
         if $debug {
             say "Working CN domain '$d' and its subdomains:";
@@ -421,6 +436,13 @@ sub write-cert-issue-scripts(%doms) {
                say "  $sd";
             }
         }
+    }
+
+    say "Normal end.";
+    if +@ofils {
+        my $s = @ofils.elems > 1 ?? 's' !! 'm';
+        say "See certbot script$s:";
+        say "  $_" for @ofils;
     }
 }
 
