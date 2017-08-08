@@ -2,9 +2,9 @@
 
 use lib <lib>;
 
+use Text::More :strip-comment;
+use Proc::More :run-command;
 use Net::ACME::Certbot::Client :ALL;
-
-# use LFS for determining a good place and name for the domain list
 
 my $domain-list   = "/etc/acme-certbot-client/domains";
 my $client-config = "/etc/acme-certbot-client/config";
@@ -36,9 +36,10 @@ my $D       = 0; # input subset of known domains
 my $help    = 0; # really a mode, but handled a bit differently at the moment
 my $log     = 0;
 
+my %doms;  # the set of all domains
+my %sdoms; # the set of all domains keyed by a unique short name
 my %udoms; # the set of domains to be considered
            # or valid subset of domains entered as D=d1[,d2,...,dN]
-
 # this may not be needed at global scope:
 my %adoms; # the set of domains to be actually issued or renewed
 
@@ -134,8 +135,7 @@ say "\nNormal end." if $view;
 
 #### SUBROUTINES ####
 sub report {
-    my $sub = 'report';
-    log-msg "-- Entering sub '$sub'...";
+    log-msg "-- Entering sub '&?ROUTINE.name'...";
 
     my %r = collect-stats;
     my @r = %r.keys.sort; # keys are numbers -1..90
@@ -198,67 +198,12 @@ sub report {
         log-msg $m;
     }
     log-end-msg;
-    log-msg "-- Exiting sub '$sub'...";
+    log-msg "-- Exiting sub '&?ROUTINE.name'...";
 
 }
 
-sub stop-apache {
-    my $sub = 'stop-apache';
-    log-msg "-- Entering sub '$sub'...";
-    return if !apache-is-running;
-    my $cmd = 'apachectl graceful-stop';
-
-    my $p = run $cmd.words;
-    log-msg "-- Exiting sub '$sub'...";
-    return $p.exitcode;
-}
-
-sub start-apache {
-    my $sub = 'start-apache';
-    log-msg "-- Entering sub '$sub'...";
-    return if apache-is-running;
-    my $cmd = 'apachectl start';
-
-    my $p = run $cmd.words;
-    log-msg "-- Exiting sub '$sub'...";
-    return $p.exitcode;
-}
-
-sub collect-stats(:$reissue = 30) {
-    my $sub = 'collect-stats';
-    log-msg "-- Entering sub '$sub'...";
-    # note reissue is essentially same as issue per acme rfc
-    my %r;
-    for %udoms.keys.sort -> $d {
-        say "=== Working domain '$d'" if $view;
-        # get the file name of the cert file (if any)
-        my $f  = "$sdir/$d/$d.cer";
-
-        if $f.IO.e {
-            say "Found cert file '$f'" if $view;
-            my $n = check-cert($f);
-            #%r{$n} = [] if !%r{$n};
-            %r{$n}.push: $d;
-            next if $n > $reissue;
-            # put doms in %adoms if need reissue
-            %adoms{$d} = $n;
-        }
-        else {
-            my $n = -1;
-            #%r{$n} = Array.new if !%r{$n};
-            %r{$n}.push: $d;
-            # put doms in %adoms if need issue
-            %adoms{$d} = -1;
-            say "No x509 cert file found...skipping to next domain" if $view;
-        }
-    }
-    log-msg "-- Exiting sub '$sub'...";
-    return %r;
-}
-
-sub list-domains {
-    my $sub = 'list-domains';
-    log-msg "-- Entering sub '$sub'...";
+sub list-domains(%doms) {
+    log-msg "-- Entering sub '&?ROUTINE.name'...";
     my @doms = %sdoms.keys.sort;
     # two passes to get nice formatting
     my $max = 0;
@@ -271,19 +216,19 @@ sub list-domains {
         my $short = %sdoms{$d};
         printf "%-*.*s  %-s\n", $max, $max, $d, $short;
     }
-    log-msg "-- Exiting sub '$sub'...";
+    log-msg "-- Exiting sub '&?ROUTINE.name'...";
 }
 
 sub auto {
-    my $sub = 'auto';
-    log-msg "-- Entering sub '$sub'...";
+    =begin comment
+    log-msg "-- Entering sub '&?ROUTINE.name'...";
     # the monitoring and installing process
     # note reissue is essentially same as issue per acme rfc
 
     # don't normally need the returned hash from collect-stats,
     # doms needing issue are in %adoms
     log-start-msg;
-    collect-stats; # values are days to expiration, or -1 for no cert existing
+    collect-stats: %udoms; # values are days to expiration, or -1 for no cert existing
 
     # need later to consider case of user wanting to issue all certs
 
@@ -292,7 +237,7 @@ sub auto {
         my $m = "NOTE: No domain certs to be issued at this time.";
         log-msg $m;
         log-end-msg;
-        log-msg "-- Exiting sub '$sub'...";
+        log-msg "-- Exiting sub '&?ROUTINE.name'...";
         return;
     }
 
@@ -323,168 +268,8 @@ sub auto {
 
     # done!
     log-end-msg;
-    log-msg "-- Exiting sub '$sub'...";
-}
-
-sub get-user-host {
-    my ($user, $host) = ('?', '?');
-    if %*ENV<TMB_MAKE_HOST> {
-        $host = %*ENV<TMB_MAKE_HOST>;
-    }
-    if %*ENV<USER> {
-        $user = %*ENV<USER>;
-    }
-    return ($user, $host);
-}
-
-sub run-command(Str:D $cmd is copy --> Int) {
-    my $sub = 'run-command';
-    log-msg "-- Entering sub '$sub'...";
-
-    # returns exit code
-    my $p = run $cmd.words;
-    log-msg "-- Exiting sub '$sub'...";
-    return $p.exitcode;
-}
-
-sub apache-is-running(--> Bool) {
-    my $sub = 'apache-is-running';
-    log-msg "-- Entering sub '$sub'...";
-    # uses the ps command to detect a running apache (httpd) process
-
-    # the best and safest method:
-    my $cmd  = "ps -C $APACHE -o cmd=";
-
-    my $p = run $cmd.words, :out;
-    my $e = $p.exitcode;
-    my $o = $p.out.slurp(:close);
-
-    if $debug {
-        print qq:to/HERE/;
-            debug: out = '$o'";
-                   cmd = '$cmd'";
-                   exit code = '$e'";
-        HERE
-    }
-
-    if $o ~~ /$APACHE/ {
-        log-msg "-- Exiting sub '$sub'...";
-        return True;
-    }
-    else {
-        log-msg "-- Exiting sub '$sub'...";
-        return False;
-    }
-}
-
-sub check-apache {
-    if apache-is-running() {
-        say "Apache IS running.";
-    }
-    else {
-        say "Apache is NOT running.";
-    }
-}
-
-sub copy-files {
-    my $sub = 'copy-files';
-    log-msg "-- Entering sub '$sub'...";
-    # final dir on dedi2 is:
-    #   /home/tbrowde/letsencrypt-certs
-    my $certdir = "/home/tbrowde/letsencrypt-certs";
-    mkdir $certdir;
-
-    # dir and all files are owned by root
-    #   chown -R root.root $dir
-
-    my %d = %udoms; # the domains to be considered
-
-    # special actions may be needed????
-    # if force, then collect all files for all domains? NO
-    # collect files to be copied from all %adoms? YES
-    if 0  {
-        if !%adoms {
-            # have to check for new files
-        }
-    }
-
-    # for now will use %adoms if not empty
-    %d = %adoms if %adoms.elems;
-
-    # source dir is $sdir
-    # todir is
-    #   /home/tbrowde/letsencrypt-certs
-    # now for the copy
-
-    # the certs and unlocked keys
-    for %d.keys -> $d {
-        # source dir
-        my $fromdir = "$sdir/$d";
-
-        my $cert-f = 'fullchain.cer';
-        my $key-f  = "$d.key";
-
-        my $cert = "$fromdir/$cert-f";
-        my $key  = "$fromdir/$key-f";
-
-        # don't continue unless we have both source files
-        next if !($cert.IO.e && $key.IO.e);
-
-        # ensure we have the target dir
-        my $todir   = "$certdir/$d";
-        mkdir $todir;
-
-        my $cert-to = "$todir/$cert-f";
-        my $key-to  = "$todir/$key-f";
-
-        # compare the files before copying
-        if same-file($cert, $cert-to) {
-            my $m = "WARNING:  Domain '$d' cert file '$cert-f' has not changed.";
-            log-msg $m;
-        }
-        else {
-            copy $cert, $cert-to;
-            my $m = "Copied domain '$d' cert file to '$cert-to'.";
-            log-msg $m;
-        }
-        if same-file($key, $key-to) {
-            my $m = "WARNING:  Domain '$d' key file '$key-f' has not changed.";
-            log-msg $m;
-        }
-        else {
-            copy $key, $key-to;
-            my $m = "Copied domain '$d' key file to '$key-to'.";
-            log-msg $m;
-        }
-    }
-    log-msg "-- Exiting sub '$sub'...";
-
-}
-
-sub same-file($f1, $f2 --> Bool) {
-    use File::Compare;
-    return files_are_equal($f1, $f2);
-}
-
-sub log-msg($m) {
-    say $m if $view;
-    $log.say: $m if $log
-}
-
-sub log-start-msg {
-    my $dt = DateTime.now;
-    my $m = "==== Start: $dt";
-    # for now don't show on stdout
-    # log-msg $m;
-    $log.say: $m if $log
-}
-
-sub log-end-msg {
-    my $dt = DateTime.now;
-    my $m = "==== End: $dt";
-    # for now don't show on stdout
-    # log-msg $m;
-    $log.say: $m if $log
+    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    =end comment
 }
 
 sub help {
@@ -526,7 +311,7 @@ sub read-domains() {
     my %doms;
     for $f.IO.lines -> $line {
         $line = lc strip-comment($line);
-        next if $line !~~ /\S/ 
+        next if $line !~~ /\S/
         my @words = $line.words;
         my $dom = @words[0];
         # default is to have first name DOMAIN.TLD
@@ -551,7 +336,7 @@ sub read-client-config() {
     my $in-certbot = 0;
     for $f.IO.lines -> $line is copy {
         $line = lc strip-comment($line);
-        next if $line !~~ /\S/ 
+        next if $line !~~ /\S/
         my @words = $line.words;
         my $key = shift @words;
         $key .= lc;
