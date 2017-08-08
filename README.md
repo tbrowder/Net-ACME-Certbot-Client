@@ -35,26 +35,53 @@ satisfy his needs.
 
 + Proc::More (a published Perl 6 module to be installed by zef)
 
-+ certbot  (install per imstructions on its website)
++ Text::More (a published Perl 6 module to be installed by zef)
+
++ certbot  (install per instructions on its website)
 
 + OpenSSL (normally available on most OSs)
 
-## Input file examples
+## Input files
+
+Input files are placed in the **/etc/acme-certbot-client** directory
+and sub-directories.  All files are to be owned by root and read-only
+for all other users.
 
 ### Configuration file (optional)
 
+Configuration files are of two types: (1) a file for the client and (2) a file for a domain.
+The client configuration file is expected to be named **/etc/acme-certbot-client/config** 
+and domain-specific configuration files are expected to be named **/etc/acme-certbot-client/DOMAIN/config**.
+Blank lines and all text from a '#' character to the end of a line are ignored.
+All non-comment text lines are treated as lower-case.
+
+
+The client configuration file can contain **acme-certbot-client** options as well as
+**certbot** options.
+
+
+```
+# ACME-CERTBOT-CLIENT OPTIONS
+# The default is to always require the CN to be in format 'DOMAIN.TLD'.
+# This user wants to allow any format (not recommended):
+allow-any-cn
+
+# CERTBOT OPTIONS
+[certbot] # <= the section tag is required in order to use **certbot** options
+```
 
 
 ### Domain file (required)
+
+The domain file is expected to be named **/etc/acme-certbot-client/domains** and consists of lines showing domain names for each 
+certificate, one line per certificate. 
+Blank lines and all text from a '#' character to the end of a line are ignored.
+All non-comment text lines are treated as lower-case.
 
 ```
 example.com www.example.com mail.example.com
 foo.net www.foo.net ns1.foo.net ns2.foo.net
 ```
-
- 
-
-
 
 
 

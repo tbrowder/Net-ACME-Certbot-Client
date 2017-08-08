@@ -2,32 +2,14 @@
 
 use lib <lib>;
 
-use Net::ACME::Certbot::Client;
+use Net::ACME::Certbot::Client :ALL;
 
 # use LFS for determining a good place and name for the domain list
 
-my $sdir = "%*ENV<HOME>/.acme.sh";
-my $acme = "$sdir/acme.sh";
-die "FATAL: Unknown dir '$sdir'" if !$sdir.IO.d;
-
-if $host eq 'juvat2' {
-    # use an alternate dir for development
-    $sdir = './de2-acme.d';
-}
-
-my %doms  = %MyDoms::doms;  # the set of domain names
-my %sdoms = %MyDoms::sdoms; # hash keyed on a unique short name for each domain
-
-
-#=== server and other user environment specifics ===
-# need name of the apache executable
-constant $APACHE = 'httpd'; # default if compiling from source
-# need the openssl binary
-constant $bin = "/usr/bin/env openssl";
-constant $STOP-ATTEMPTS  = 360; # probably overkill
-constant $SLEEP-INTERVAL =  10; # seconds
-constant $LOGDIR = '/usr/local/people/tbrowde/mydata/tbrowde-home-bzr/acme.sh/logs';
-#=== end server specifics ===
+my $domain-list   = "/etc/acme-certbot-client/domains";
+my $client-config = "/etc/acme-certbot-client/config";
+my $certbot-dir   = "/etc/letsencrypt";
+#die "FATAL: Unknown dir '$sdir'" if !$sdir.IO.d;
 
 # 5 modes
 my $report = 0; # report cert status
@@ -338,40 +320,6 @@ sub auto {
     log-msg "-- Exiting sub '$sub'...";
 }
 
-sub get-cert-valid-days(Int:D :$day! where { $day ~~ 1..31 },
-                        Str:D :$mon!,
-                        Int:D :$year! where { $year > 2015 }) {
-    my $sub = 'get-cert-valid-days';
-    log-msg "-- Entering sub '$sub'...";
-
-    my $mon-num = do given $mon {
-        when /:i ^ jan / { '01' }
-        when /:i ^ feb / { '02' }
-        when /:i ^ mar / { '03' }
-        when /:i ^ apr / { '04' }
-        when /:i ^ may / { '05' }
-        when /:i ^ jun / { '06' }
-        when /:i ^ jul / { '07' }
-        when /:i ^ aug / { '08' }
-        when /:i ^ sep / { '09' }
-        when /:i ^ oct / { '10' }
-        when /:i ^ nov / { '11' }
-        when /:i ^ dec / { '12' }
-        default {
-            die "FATAL: Unknown month input '$mon'"
-        }
-    }
-
-    # get the days since the epoch
-    my $expjdays = Date.new("$year-$mon-num-$day").daycount;
-    my $nowjdays = Date.today.daycount;
-
-    # the difference is the number of valid days remaining
-    log-msg "-- Exiting sub '$sub'...";
-
-    return $expjdays - $nowjdays;
-}
-
 sub get-user-host {
     my ($user, $host) = ('?', '?');
     if %*ENV<TMB_MAKE_HOST> {
@@ -565,3 +513,57 @@ sub help {
     HERE
     exit;
 }
+
+sub read-client-config() {
+    my $f = $client-config;    
+    return if !$f.IO.f;
+    my $in-certbot = 0;
+    for $client-config.IO.lines -> $line {
+        my @words = $line.words;
+        my $key = shift @words;
+        $key .= lc;
+        my $val = @words.elems ?? join('', @words) !! '';
+        $val .= lc;
+        # is the key a certbot tag?
+        if $key eq '[certbot]' {
+            ++$in-certbot;
+            next;
+        }
+
+        # is the key a valid option?
+        if %known-options{$key}.exists {
+            # does it have leading hyphens?
+            if $key ~~ /^ '-' / && !$in-certbot {
+                die "FATAL:  Key '$key' is not a known acme-certbot-client option."; 
+            }
+        }
+        else {
+            die "FATAL:  Unknown client configuration option '$key'.";
+        }   
+    
+        # what now???
+}
+
+BEGIN {
+    %known-options = [
+        # acme-certbot-client
+        # distinguished by no leading hyphen(s)
+        allow-any-cn => '',
+
+        # certbot options
+        # distinguished by leading hyphen(s)
+--test-cert
+--dry-run
+--debug
+--webroot
+-vvv
+--non-interactive
+--preferred-challenges => 'list',
+--must-staple
+--rsa-key-size => 'uint',
+--agree-tos
+
+        
+    ];
+}
+
