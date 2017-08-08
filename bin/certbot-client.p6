@@ -5,7 +5,8 @@ use lib <lib>;
 use Text::More :strip-comment;
 use Proc::More :run-command;
 use Net::ACME::Certbot::Client :ALL;
-
+   
+my %known-options; # defined in BEGIN block at eof
 my $domain-list   = "/etc/acme-certbot-client/domains";
 my $client-config = "/etc/acme-certbot-client/config";
 my $certbot-dir   = "/etc/letsencrypt";
@@ -50,6 +51,7 @@ if !@*ARGS {
     exit;
 }
 
+%doms = read-domains;
 for @*ARGS {
     # 5 modes ('z' is a sub that zeroes all mode args)
     when /^ ch / { z; $check   = 1; }
@@ -66,7 +68,6 @@ for @*ARGS {
     when /^ t  / { $test    = 1; }
     when /^ v  / { $verbose = 1; }
     when /^ l  / { $log     = 1; }
-    =begin comment
     when /^ 'D=' / {
        $D = 1;
        my $a = $_;
@@ -91,8 +92,7 @@ for @*ARGS {
                }
            }
        }
-    }
-    =end comment
+   }
     default {
         say "FATAL: Unknown arg '$_'.";
         exit;
@@ -100,7 +100,6 @@ for @*ARGS {
 }
 
 help if $help;
-=begin comment
 if $D && !%udoms {
     say "FATAL: No known domains entered with the 'D=' option.";
     exit;
@@ -108,7 +107,6 @@ if $D && !%udoms {
 else {
     %udoms = %doms;
 }
-=end comment
 
 # a convenience var:
 my $view = $debug || $verbose;
@@ -125,10 +123,10 @@ if $log {
 # now execute per chosen mode
 {
     when so $check  { check-apache }
-    when so $copy   { copy-files }
+    #when so $copy   { copy-files }
     when so $report { report }
     when so $auto   { auto }
-    when so $show   { list-domains }
+    when so $show   { list-domains: %doms }
 }
 
 say "\nNormal end." if $view;
@@ -306,12 +304,12 @@ sub help {
 }
 
 sub read-domains() {
-    my $f = $domains;
+    my $f = $domain-list;
     return if !$f.IO.f;
     my %doms;
     for $f.IO.lines -> $line {
         $line = lc strip-comment($line);
-        next if $line !~~ /\S/
+        next if $line !~~ /\S/;
         my @words = $line.words;
         my $dom = @words[0];
         # default is to have first name DOMAIN.TLD
@@ -336,7 +334,7 @@ sub read-client-config() {
     my $in-certbot = 0;
     for $f.IO.lines -> $line is copy {
         $line = lc strip-comment($line);
-        next if $line !~~ /\S/
+        next if $line !~~ /\S/;
         my @words = $line.words;
         my $key = shift @words;
         $key .= lc;
@@ -362,6 +360,7 @@ sub read-client-config() {
         }
 
         # what now???
+    }
 }
 
 BEGIN {
@@ -378,9 +377,9 @@ BEGIN {
 	'--webroot' => '',
 	'-vvv' => '',
 	'--non-interactive' => '',
-	'--preferred-challenges => 'list',
+	'--preferred-challenges' => 'list',
 	'--must-staple' => '',
-	'--rsa-key-size => 'uint',
+	'--rsa-key-size' => 'uint',
 	'--agree-tos' => '',
     ];
 }
