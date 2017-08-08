@@ -1,6 +1,6 @@
 #!/usr/bin/env perl6
 
-use lib <lib>;
+use lib <../lib lib>;
 
 use Text::More :strip-comment;
 use Proc::More :run-command;
@@ -411,12 +411,12 @@ sub write-cert-issue-scripts(%doms) {
         $o8 = '--redirect --hsts';
         if 1 {
             # for testing
-            $o1 = '--force';
+            $o1 = '--force-renewal';
             $o3 = '--test-cert';
         }
         else {
             # for real!
-            $o1 = $force ?? '--force' !! '';
+            $o1 = $force ?? '--force-renewal' !! '';
             $o3 = $test ?? '--test-cert' !! '';
         } 
 
