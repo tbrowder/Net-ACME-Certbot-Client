@@ -419,9 +419,9 @@ sub write-cert-issue-scripts(%doms) {
             $o1 = $force ?? '--force-renewal' !! '';
             $o3 = $test ?? '--test-cert' !! '';
         } 
-
+        my $email = 'tom.browder@gmail.com';
         $fh.printf: "#!/bin/bash\n";
-        $fh.printf: "certbot certonly $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 -d $d"; # no newline!
+        $fh.printf: "certbot certonly --email $email $o1 $o2 $o3 $o4 $o5 $o6 $o7 $o8 -d $d"; # no newline!
         for @sd -> $sd {
             $fh.print: " -d $sd";
         }
