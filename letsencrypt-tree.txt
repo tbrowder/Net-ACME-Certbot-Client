@@ -1,0 +1,47 @@
+drwxr-xr-x 8 root root 4096 Aug  9 15:20 /etc/letsencrypt
+drwxr-xr-x 2 root root 4096 Aug  9 15:39 /etc/letsencrypt/csr
+-rw-r--r-- 1 root root 1029 Aug  9 15:39 /etc/letsencrypt/csr/0001_csr-certbot.pem
+-rw-r--r-- 1 root root 993 Aug  9 15:20 /etc/letsencrypt/csr/0000_csr-certbot.pem
+drwx------ 4 root root 4096 Aug  8 19:16 /etc/letsencrypt/accounts
+drwx------ 3 root root 4096 Aug  8 19:16 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org
+drwx------ 3 root root 4096 Aug  8 19:18 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org/directory
+drwx------ 2 root root 4096 Aug  8 19:18 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org/directory/161f130ca9a782e340492e52c6a77895
+-r-------- 1 root root 1632 Aug  8 19:18 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org/directory/161f130ca9a782e340492e52c6a77895/private_key.json
+-rw-r--r-- 1 root root 756 Aug  8 19:18 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org/directory/161f130ca9a782e340492e52c6a77895/regr.json
+-rw-r--r-- 1 root root 65 Aug  8 19:18 /etc/letsencrypt/accounts/acme-staging.api.letsencrypt.org/directory/161f130ca9a782e340492e52c6a77895/meta.json
+drwx------ 3 root root 4096 Aug  7 12:07 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org
+drwx------ 3 root root 4096 Aug  7 12:07 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory
+drwx------ 2 root root 4096 Aug  8 10:10 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/7e6706838b40e861c6a9727081528b10
+-r-------- 1 root root 1632 Aug  7 12:07 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/7e6706838b40e861c6a9727081528b10/private_key.json
+-rw-r--r-- 1 root root 749 Aug  7 12:07 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/7e6706838b40e861c6a9727081528b10/regr.json
+-rw-r--r-- 1 root root 65 Aug  7 12:07 /etc/letsencrypt/accounts/acme-v01.api.letsencrypt.org/directory/7e6706838b40e861c6a9727081528b10/meta.json
+drwx------ 2 root root 4096 Aug  9 15:39 /etc/letsencrypt/keys
+-rw------- 1 root root 1704 Aug  9 15:20 /etc/letsencrypt/keys/0000_key-certbot.pem
+-rw------- 1 root root 1704 Aug  9 15:39 /etc/letsencrypt/keys/0001_key-certbot.pem
+drwx------ 4 root root 4096 Aug  9 15:39 /etc/letsencrypt/live
+drwxr-xr-x 2 root root 4096 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net
+lrwxrwxrwx 1 root root 37 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net/chain.pem -> ../../archive/tbrowder.net/chain1.pem
+lrwxrwxrwx 1 root root 39 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net/privkey.pem -> ../../archive/tbrowder.net/privkey1.pem
+-rw-r--r-- 1 root root 543 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net/README
+lrwxrwxrwx 1 root root 41 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net/fullchain.pem -> ../../archive/tbrowder.net/fullchain1.pem
+lrwxrwxrwx 1 root root 36 Aug  9 15:39 /etc/letsencrypt/live/tbrowder.net/cert.pem -> ../../archive/tbrowder.net/cert1.pem
+drwxr-xr-x 2 root root 4096 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com
+lrwxrwxrwx 1 root root 35 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com/chain.pem -> ../../archive/mygnus.com/chain1.pem
+lrwxrwxrwx 1 root root 37 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com/privkey.pem -> ../../archive/mygnus.com/privkey1.pem
+-rw-r--r-- 1 root root 543 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com/README
+lrwxrwxrwx 1 root root 39 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com/fullchain.pem -> ../../archive/mygnus.com/fullchain1.pem
+lrwxrwxrwx 1 root root 34 Aug  9 15:20 /etc/letsencrypt/live/mygnus.com/cert.pem -> ../../archive/mygnus.com/cert1.pem
+drwxr-xr-x 2 root root 4096 Aug  9 15:39 /etc/letsencrypt/renewal
+-rw-r--r-- 1 root root 623 Aug  9 15:39 /etc/letsencrypt/renewal/tbrowder.net.conf
+-rw-r--r-- 1 root root 575 Aug  9 15:20 /etc/letsencrypt/renewal/mygnus.com.conf
+drwx------ 4 root root 4096 Aug  9 15:39 /etc/letsencrypt/archive
+drwxr-xr-x 2 root root 4096 Aug  9 15:39 /etc/letsencrypt/archive/tbrowder.net
+-rw-r--r-- 1 root root 3509 Aug  9 15:39 /etc/letsencrypt/archive/tbrowder.net/fullchain1.pem
+-rw-r--r-- 1 root root 1862 Aug  9 15:39 /etc/letsencrypt/archive/tbrowder.net/cert1.pem
+-rw-r--r-- 1 root root 1704 Aug  9 15:39 /etc/letsencrypt/archive/tbrowder.net/privkey1.pem
+-rw-r--r-- 1 root root 1647 Aug  9 15:39 /etc/letsencrypt/archive/tbrowder.net/chain1.pem
+drwxr-xr-x 2 root root 4096 Aug  9 15:20 /etc/letsencrypt/archive/mygnus.com
+-rw-r--r-- 1 root root 3477 Aug  9 15:20 /etc/letsencrypt/archive/mygnus.com/fullchain1.pem
+-rw-r--r-- 1 root root 1830 Aug  9 15:20 /etc/letsencrypt/archive/mygnus.com/cert1.pem
+-rw-r--r-- 1 root root 1704 Aug  9 15:20 /etc/letsencrypt/archive/mygnus.com/privkey1.pem
+-rw-r--r-- 1 root root 1647 Aug  9 15:20 /etc/letsencrypt/archive/mygnus.com/chain1.pem
