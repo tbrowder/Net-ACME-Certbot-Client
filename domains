@@ -1,4 +1,6 @@
 # my domains
 # registrar: namecheap.com
+[webroot]
 tbrowder.net mail.tbrowder.net www.tbrowder.net
 mygnus.com
+[standalone]

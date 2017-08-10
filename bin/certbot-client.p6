@@ -12,33 +12,29 @@ my $client-config = "/etc/acme-certbot-client/config";
 my $certbot-dir   = "/etc/letsencrypt";
 #die "FATAL: Unknown dir '$sdir'" if !$sdir.IO.d;
 
-# 6 modes
+# 4 modes
 my $report = 0; # report cert status
-my $auto   = 0; # issue new if needed
-my $copy   = 0; # copy cert prods into place
+my $cron   = 0; # write a cron script
 my $show   = 0; # show a list of long and short names of all domains
                 # also shows a list of subdomains
-my $check  = 0; # check and report on apache (httpd) run status
-my $issue  = 0; # catch-all issue command
+my $issue  = 0; # catch-all issue command using the webroot method unless the
+                # standalone option is used
                 # for now this just writes a script for each domain
 
 sub z {
     $report = 0; # report cert status
-    $auto   = 0; # issue new if needed
-    $copy   = 0; # copy cert prods into place
+    $cron   = 0; # write a cron script
     $show   = 0; # show a list of long and short names of all domains
-    $check  = 0; # check and report on apache (httpd) run status
     $issue  = 0; # catch-all issue command
-                 # for now this just writes a script for each domain
 }
 
 # 8 options
-# issue options
+# 4 issue options
 my $force   = 0; # force issue even if valid
 my $test    = 0; # use the acme test (stage) server
 my $D       = 0; # input subset of known domains
-# other options
-my $exe     = 0; # needed to allow file system changes
+my $alone   = 0; # use the standalone
+# 4 other options
 my $debug   = 0;
 my $verbose = 0;
 my $help    = 0; # really a mode, but handled a bit differently at the moment
@@ -61,17 +57,15 @@ if !@*ARGS {
 %doms = read-domains($domain-list, :debug(0));
 read-client-config($client-config);
 for @*ARGS {
-    # 6 modes ('z' is a sub that zeroes all mode args)
-    when /^ ch / { z; $check   = 1; }
-    when /^ co / { z; $copy    = 1; }
-    when /^ a  / { z; $auto    = 1; }
+    # 4 modes ('z' is a sub that zeroes all mode args)
+    when /^ c  / { z; $cron    = 1; }
     when /^ r  / { z; $report  = 1; }
     when /^ s  / { z; $show    = 1; }
     when /^ i  / { z; $issue   = 1; }
 
     # 8 options
-    when /^ e  / { $exe     = 1; }
     when /^ h  / { $help    = 1; }
+    when /^ a  / { $alone   = 1; }
     when /^ d  / { $debug   = 1; }
     when /^ f  / { $force   = 1; }
     when /^ t  / { $test    = 1; }
@@ -131,10 +125,8 @@ if $log {
 
 # now execute per chosen mode
 {
-    when so $check  { check-apache }
-    #when so $copy   { copy-files }
-    when so $report { report }
-    when so $auto   { auto }
+    when so $report { report(%doms) }
+    when so $cron   { cron(%doms) }
     when so $show   { list-domains(%doms) }
     when so $issue  { write-cert-issue-scripts(%doms) }
 }
@@ -142,8 +134,8 @@ if $log {
 say "\nNormal end." if $view;
 
 #### SUBROUTINES ####
-sub report {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+sub report(%doms) {
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
 
     my %r = collect-stats;
     my @r = %r.keys.sort; # keys are numbers -1..90
@@ -206,13 +198,13 @@ sub report {
         log-msg $m;
     }
     log-end-msg;
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
 
 }
 
 sub list-domains(%doms) {
-    log-msg "-- Entering sub 'list-domains'...";
-    say "DEBUG: -- Entering sub 'list-domains'..." if $debug;
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
+    say "DEBUG: -- Entering sub '{&?ROUTINE.name}'..." if $debug;
     say %doms.gist if $debug;
     say "WARNING: \%doms has no elements" if !%doms.elems;
     # need abbrevs
@@ -237,12 +229,12 @@ sub list-domains(%doms) {
             say "  => $sd";
         }
     }
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
 }
 
-sub auto {
+sub cron(%doms) {
     =begin comment
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
     # the monitoring and installing process
     # note reissue is essentially same as issue per acme rfc
 
@@ -258,7 +250,7 @@ sub auto {
         my $m = "NOTE: No domain certs to be issued at this time.";
         log-msg $m;
         log-end-msg;
-        log-msg "-- Exiting sub '&?ROUTINE.name'...";
+        log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
         return;
     }
 
@@ -289,7 +281,7 @@ sub auto {
 
     # done!
     log-end-msg;
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
     =end comment
 }
 
@@ -299,15 +291,13 @@ sub help {
 
     modes:
       r  - report cert status
-      a  - issue new if needed
-      co - copy cert prods into place
+      c  - create a cron script 
       s  - show a list of long and short names of all domains
-      ch - check and report on apache (httpd) run status
       i  - write certbot script for each CN domain
 
     options:
+      a     use the standalone mode
       f     force issue even if valid
-      e     needed to allow file system changes
       d     debug
       t     use the acme test (stage) server
       v     verbose

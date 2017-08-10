@@ -6,7 +6,7 @@ my $debug  = 0;
 sub check-cert-valid-days($certfile,
                           :$view,
                            --> Int) is export(:check-cert-valid-days) {
-    #log-msg "-- Entering sub '&?ROUTINE.name'...";
+    #log-msg "-- Entering sub '{&?ROUTINE.name}'...";
 
     # cert should be a pem-encoded file
     # we use openssl to get clear text to view and search
@@ -56,7 +56,7 @@ sub check-cert-valid-days($certfile,
 	}
     }
 
-    #log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    #log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
     return $valid-days;
 }
 
@@ -66,7 +66,7 @@ sub get-cert-valid-days(Int:D :$day! where { $day ~~ 1..31 },
                         Int:D :$year! where { $year > 2015 },
 			--> Int
 		       ) is export(:get-cert-valid-days) {
-    #log-msg "-- Entering sub '&?ROUTINE.name'...";
+    #log-msg "-- Entering sub '{&?ROUTINE.name}'...";
 
     my $mon-num = do given $mon {
         when /:i ^ jan / { '01' }
@@ -91,13 +91,13 @@ sub get-cert-valid-days(Int:D :$day! where { $day ~~ 1..31 },
     my $nowjdays = Date.today.daycount;
 
     # the difference is the number of valid days remaining
-    #log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    #log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
 
     return $expjdays - $nowjdays;
 }
 
 sub apache-is-running(--> Bool) is export(:apache-is-running) {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
     # uses the ps command to detect a running apache (httpd) process
 
     # the best and safest method:
@@ -116,11 +116,11 @@ sub apache-is-running(--> Bool) is export(:apache-is-running) {
     }
 
     if $o ~~ /$APACHE/ {
-        log-msg "-- Exiting sub '&?ROUTINE.name'...";
+        log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
         return True;
     }
     else {
-        log-msg "-- Exiting sub '&?ROUTINE.name'...";
+        log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
         return False;
     }
 }
@@ -161,27 +161,27 @@ sub log-end-msg(:$log) is export(:log-end-msg) {
 }
 
 sub start-apache() is export(:start-apache) {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
     return if apache-is-running;
     my $cmd = 'apachectl start';
 
     my $p = run $cmd.words;
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
     return $p.exitcode;
 }
 
 sub stop-apache() is export(:stop-apache) {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
     return if !apache-is-running;
     my $cmd = 'apachectl graceful-stop';
 
     my $p = run $cmd.words;
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
     return $p.exitcode;
 }
 
 sub collect-stats(:%adoms, :$certbot-dir, :%udoms, :$reissue = 30, :$view) is export(:collect-stats) {
-    log-msg "-- Entering sub '&?ROUTINE.name'...";
+    log-msg "-- Entering sub '{&?ROUTINE.name}'...";
     # note reissue is essentially same as issue per acme rfc
     my %r;
     for %udoms.keys.sort -> $d {
@@ -207,7 +207,7 @@ sub collect-stats(:%adoms, :$certbot-dir, :%udoms, :$reissue = 30, :$view) is ex
             say "No x509 cert file found...skipping to next domain" if $view;
         }
     }
-    log-msg "-- Exiting sub '&?ROUTINE.name'...";
+    log-msg "-- Exiting sub '{&?ROUTINE.name}'...";
     return %r;
 }
 
