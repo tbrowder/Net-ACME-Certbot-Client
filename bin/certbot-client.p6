@@ -186,6 +186,7 @@ sub report(%doms) {
     }
     else {
         my $m = "\nNo domains need issue or reissue.";
+        say "\nNo domains need issue or reissue.";
         log-msg $m;
     }
 

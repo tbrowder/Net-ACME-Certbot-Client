@@ -1,0 +1,23 @@
+/etc/letsencrypt/
+/etc/letsencrypt/csr/
+/etc/letsencrypt/accounts/
+/etc/letsencrypt/keys/
+/etc/letsencrypt/keys/0001_key-certbot.pem
+/etc/letsencrypt/live/
+/etc/letsencrypt/live/tbrowder.net
+/etc/letsencrypt/live/tbrowder.net/chain.pem -> ../../archive/tbrowder.net/chain1.pem
+/etc/letsencrypt/live/tbrowder.net/privkey.pem -> ../../archive/tbrowder.net/privkey1.pem
+/etc/letsencrypt/live/tbrowder.net/README
+/etc/letsencrypt/live/tbrowder.net/fullchain.pem -> ../../archive/tbrowder.net/fullchain1.pem
+/etc/letsencrypt/live/tbrowder.net/cert.pem -> ../../archive/tbrowder.net/cert1.pem
+/etc/letsencrypt/live/mygnus.com
+/etc/letsencrypt/renewal/
+/etc/letsencrypt/renewal/tbrowder.net.conf
+/etc/letsencrypt/renewal/mygnus.com.conf
+/etc/letsencrypt/archive/
+/etc/letsencrypt/archive/tbrowder.net
+/etc/letsencrypt/archive/tbrowder.net/fullchain1.pem
+/etc/letsencrypt/archive/tbrowder.net/cert1.pem
+/etc/letsencrypt/archive/tbrowder.net/privkey1.pem
+/etc/letsencrypt/archive/tbrowder.net/chain1.pem
+/etc/letsencrypt/archive/mygnus.com
