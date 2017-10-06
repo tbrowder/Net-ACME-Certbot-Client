@@ -125,10 +125,10 @@ if $log {
 
 # now execute per chosen mode
 {
-    when so $report { report(%doms) }
-    when so $cron   { cron(%doms) }
-    when so $show   { list-domains(%doms) }
-    when so $issue  { write-cert-issue-scripts(%doms) }
+    when so $report { report %doms  }
+    when so $cron   { cron %doms  }
+    when so $show   { list-domains %doms  }
+    when so $issue  { write-cert-issue-scripts %doms  }
 }
 
 say "\nNormal end." if $view;
@@ -211,7 +211,7 @@ sub list-domains(%doms) {
     # need abbrevs
     my %word-abbrev;
     my %abbrev-word;
-    abbrev(%doms, :%word-abbrev, :%abbrev-word);
+    abbrev %doms, :%word-abbrev, :%abbrev-word;
     my @doms = %doms.keys.sort;
     # two passes to get nice formatting
     my $max = 0;
@@ -242,7 +242,7 @@ sub cron(%doms) {
     # don't normally need the returned hash from collect-stats,
     # doms needing issue are in %adoms
     log-start-msg;
-    collect-stats: %udoms; # values are days to expiration, or -1 for no cert existing
+    collect-stats %udoms; # values are days to expiration, or -1 for no cert existing
 
     # need later to consider case of user wanting to issue all certs
 
@@ -273,11 +273,11 @@ sub cron(%doms) {
     # make sure it's working...
     if !apache-is-running() {
         my $m = 'ERROR: Apache is NOT running after attempted restart.';
-        log-msg($m);
+        log-msg $m;
     }
     else {
         my $m = 'Apache IS running after restart.';
-        log-msg($m);
+        log-msg $m;
     }
 
     # done!
@@ -333,7 +333,7 @@ sub read-domains($domain-list-fname, :$debug) {
         my @words = $line.words;
         my $dom = @words[0];
         # default is to have first name DOMAIN.TLD
-        my @d = split('.', $dom, :skip-empty);
+        my @d = split '.', $dom, :skip-empty;
         die "FATAL: first domain '$dom' is not in DOMAIN.TLD format" if @d.elems != 2;
         # ensure we have "www.DOMAIN.TLD"
         @words.append: "www.$dom";

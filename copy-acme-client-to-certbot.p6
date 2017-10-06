@@ -1,40 +1,60 @@
-#!/bin/bash
+#!/usr/bin/env perl6
 
-ADIR=/etc/ssl/acme
-ADIR2=/etc/ssl/acme/private
+my $TEST = 1;
+my $BASEDIR;
+if $TEST {
+    $BASEDIR = '/usr/local/people/tbrowde/mydata/tbrowde-home-bzr/perl6/my-public-modules/github/Net-ACME-Certbot-Client-Perl6';
+}
+else {
+    $BASEDIR = '';
+}
 
-if [[ -z $1 ]] ; then
-    echo "Usage: $0 test | exe"
-    echo
-    echo "Tests or executes updating certbot client dirs with acme-client files."
-    echo "  in directories '$ADIR' and '$ADIR2'."
-    echo
-    exit
-fi
+my $ADIR  = "$BASEDIR/etc/ssl/acme";
+my $ADIR2 = "$BASEDIR/etc/ssl/acme/private";
 
-if [[ ! -d $ADIR ]] ; then
-    echo "FATAL:  Dir '$ADIR' not found!"
-    exit
-elif [[ ! -d $ADIR2 ]] ; then
-    echo "FATAL:  Dir '$ADIR2' not found!"
-    exit
-fi
+my $N = 1;
 
-EXE=
-if [[ $1 = 'exe' ]] ; then
-    EXE=1
-    echo "Executing..."
-else
-    echo "Testing..."
-fi
+if !@*ARGS {
+    say "Usage: $*PROGRAM test | exe [debug]";
+    say "";
+    say "Tests or executes updating certbot client dirs with acme-client files.";
+    say "  in directories:";
+    say "    '$ADIR'";
+    say "    '$ADIR2'.";
+    say "";
+    exit;
+}
+
+if !$ADIR.IO.d {
+    die "FATAL:  Dir '$ADIR' not found!";
+}
+elsif !$ADIR2.IO.d {
+    die "FATAL:  Dir '$ADIR2' not found!";
+}
+
+my $EXE = 0;
+my $debug = 0;
+for @*ARGS {
+    when /:i ^ e/ { $EXE = 1 }
+    when /:i ^ t/ { $EXE = 0 }
+    when /:i ^ d/ { $debug = 0 }
+    default       { $EXE = 0 }
+}
+
+if $EXE {
+    say "Executing..."
+}
+else {
+    say "Testing..."
+}
 
 # # debugging
 # if [[ -n $EXE ]] ; then
-#     echo "EXE is defined"
+#     say "EXE is defined"
 # else
-#     echo "EXE is NOT defined"
+#     say "EXE is NOT defined"
 # fi
-# echo "DEBUG exit"
+# say "DEBUG exit"
 # exit
 
 # these domains are already in place:
@@ -44,44 +64,41 @@ fi
 #   ns1.tbrowder.net
 #   ...
 
-SKIP="\
-mygnus.com \
-tbrowder.net \
-ns1.tbrowder.net \
-"
+my @SKIP=<
+mygnus.com
+tbrowder.net
+ns1.tbrowder.net
+>;
 
 # domains with good certs from acme-client:
 # UPDATE!!!
-ADOMS="\
-canterburycircle.us \
-computertechnwf.org \
-mbrowder.com \
-novco1968tbs.com \
-nwflug.org \
-psrr.info \
-usafa-1965.org \
-"
+#canterburycircle.us
+#computertechnwf.org
+#mbrowder.com
+my @ADOMS=<
+novco1968tbs.com
+nwflug.org
+psrr.info
+usafa-1965.org
+>;
 
-for dom in $ADOMS
-do
-    echo "Working $dom...";
-    for s in $SKIP ; do
-        if [[ $s = $dom ]] ; then
-	    echo "NOTE:  Skipping domain '$s'"
-	fi
-    done
+for @ADOMS -> $dom {
+    say "Working acme-client domain $dom...";
+    for @SKIP -> $s {
+        if $s eq $dom {
+	    say "NOTE:  Skipping domain '$s'"
+	}
+    }
 
-    SRCDIR=$ADIR/$dom
-    if [[ ! -d $SRCDIR ]] ; then
-	echo "FATAL:  Dir '$SCRDIR' not found!"
-	exit
-    fi
+    my $SRCDIR="$ADIR/$dom";
+    if !$SRCDIR.IO.d {
+	die "FATAL:  Dir '$SRCDIR' not found!";
+    }
 
-    SRCDIR2=$ADIR/private/$dom
-    if [[ ! -d $SRCDIR2 ]] ; then
-	echo "FATAL:  Dir '$SCRDIR2' not found!"
-	exit
-    fi
+    my $SRCDIR2="$ADIR/private/$dom";
+    if !$SRCDIR2.IO.d {
+	die "FATAL:  Dir '$SRCDIR2' not found!"
+    }
 
     # new files: chown root.root
     # new files: chmod 0400
@@ -91,13 +108,14 @@ do
     # cp $ADIR/DOMAIN/cert.pem      -> /etc/letsencrypt/archive/DOMAIN/certN.pem
     # cp $ADIR/DOMAIN/chain.pem     -> /etc/letsencrypt/archive/DOMAIN/chainN.pem
     # cp $ADIR/DOMAIN/fullchain.pem -> /etc/letsencrypt/archive/DOMAIN/fullchainN.pem
-    TODIRPUB=/etc/letsencrypt/archive/$dom
-    if [[ ! -d $TODIRPUB ]] ; then
-	echo "Creating dir '$TODIRPUB'..."
-	if [[ -n $EXE ]] ; then
-	    mkdir -p $TODIRPUB
-	fi
-    fi
+    my $TODIR="$BASEDIR/etc/letsencrypt/archive/$dom";
+    if !$TODIR.IO.d {
+	say "Creating dir '$TODIR'...";
+	if $EXE {
+	    #mkdir -p $TODIR;
+	    mkdir $TODIR;
+	}
+    }
 
     # don't forget the links to
     # /etc/letsencrypt/live/tbrowder.net/chain.pem -> ../../archive/tbrowder.net/chain1.pem
@@ -108,42 +126,38 @@ do
     # /etc/letsencrypt/archive/DOMAIN/chainN.pem # /etc/letsencrypt/archive/DOMAIN/chainN.pem
     # /etc/letsencrypt/archive/DOMAIN/fullchainN.pem # /etc/letsencrypt/archive/DOMAIN/fullchainN.pem
 
-    for f in cert chain fullchain
-    do
-        F1A=$SRCDIR/$f.pem
-        F1B=$TODIR/$f${N}.pem
-        echo "Copying file '$F1A' to"
-        echo "             '$F1B'"
-        if [[ ! -f $F1A ]] ; then
-            echo "FATAL:  File '$F1A' not found!"
-	    exit
-        fi
-        if [[ -n $EXE ]] ; then
-	    cp $F1A $F1B
-	    chown root.root $F1B
-            chmod 0400      $F1B
-        fi
-    done
+    for <cert chain fullchain> -> $f {
+        my $F1A="$SRCDIR/$f.pem";
+        my $F1B="$TODIR/{$f}{$N}.pem";
+        say "Copying file '$F1A' to";
+        say "             '$F1B'";
+        if !$F1A.IO.f {
+            die "FATAL:  File '$F1A' not found!"
+        }
+        if $EXE {
+	    copy $F1A, $F1B;
+	    run "chown root.root $F1B".words;
+            $F1B.IO.chmod: 0o0400;
+        }
+    }
 
 
     #=============================================================
     # this file is for the httpd server:
     # cp $ADIR/DOMAIN/cert.pem      -> /etc/letsencrypt/archive/DOMAIN/privkeyN.pem
-    F2A=$SRCDIR/$dom.key
-    F2B=$TODIRPRIV/privkey.pem
-    echo "Copying file '$F2A' to"
-    echo "             '$F2B'"
-    if [[ ! -f $F2A ]] ; then
-	echo "FATAL:  File '$F2A' not found!"
-	exit
-    fi
-    if [[ -n $EXE ]] ; then
-	cp $F2A $F2B
-	chown root.root $F2B
-	chmod 0400      $F2B
-    fi
-
-done
+    my $F2A = "$SRCDIR2/privkey.pem";
+    my $F2B = "$TODIR/privkey{$N}.pem";
+    say "Copying file '$F2A' to";
+    say "             '$F2B'";
+    if !$F2A.IO.d {
+	die "FATAL:  File '$F2A' not found!";
+    }
+    if $EXE {
+	copy $F2A, $F2B;
+        run "chown root.root $F2B".words;
+        $F2B.IO.chmod: 0o0400;
+    }
+}
 
 
 
@@ -153,22 +167,23 @@ exit
 # for later use
 
 # other domains (and hosts) with good acme-client certs
-CDOMS="\
-dedi2.tbrowder.net \
-f-111.org \
-freestatesofamerica.org \
-highlandsprings61.org \
-mail.tbrowder.net \
-moody67a.org \
-mygnus.com \
-ns1.tbrowder.net \
-ns2.tbrowder.net \
-nwflorida.info \
-nwfpug.nwflorida.info \
-smtp.tbrowder.net \
-tbrowder.net \
-"
+my @CDOMS=<
+dedi2.tbrowder.net
+f-111.org
+freestatesofamerica.org
+highlandsprings61.org
+mail.tbrowder.net
+moody67a.org
+mygnus.com
+ns1.tbrowder.net
+ns2.tbrowder.net
+nwflorida.info
+nwfpug.nwflorida.info
+smtp.tbrowder.net
+tbrowder.net
+>;
 
+=begin comment
 
 #=================
 # 8 acme domains to skip (add all subdomains to main domain):
@@ -218,3 +233,5 @@ computertechnwf.org
 /etc/letsencrypt/archive/tbrowder.net/privkey1.pem
 /etc/letsencrypt/archive/tbrowder.net/chain1.pem
 /etc/letsencrypt/archive/mygnus.com
+
+=end comment
