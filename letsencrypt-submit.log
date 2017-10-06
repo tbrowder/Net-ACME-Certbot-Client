@@ -1,0 +1,550 @@
+2017-08-09 18:08:49,892:DEBUG:certbot.main:Root logging level set at 20
+2017-08-09 18:08:49,893:INFO:certbot.main:Saving debug log to /var/log/letsencrypt/letsencrypt.log
+2017-08-09 18:08:49,893:DEBUG:certbot.main:certbot version: 0.10.2
+2017-08-09 18:08:49,893:DEBUG:certbot.main:Arguments: ['--email', 'tom.browder@gmail.com', '--force-renewal', '--must-staple', '--non-interactive', '--webroot', '--agree-tos', '-w', '/var/www/acme', '--redirect', '--hsts', '-d', 'mygnus.com', '-d', 'www.mygnus.com']
+2017-08-09 18:08:49,894:DEBUG:certbot.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#webroot,PluginEntryPoint#null,PluginEntryPoint#manual,PluginEntryPoint#standalone)
+2017-08-09 18:08:49,894:DEBUG:certbot.plugins.selection:Requested authenticator webroot and installer None
+2017-08-09 18:08:49,898:DEBUG:certbot.plugins.selection:Single candidate plugin: * webroot
+Description: Place files in webroot directory
+Interfaces: IAuthenticator, IPlugin
+Entry point: webroot = certbot.plugins.webroot:Authenticator
+Initialized: <certbot.plugins.webroot.Authenticator object at 0x7fd886972450>
+Prep: True
+2017-08-09 18:08:49,899:DEBUG:certbot.plugins.selection:Selected authenticator <certbot.plugins.webroot.Authenticator object at 0x7fd886972450> and installer None
+2017-08-09 18:08:50,094:DEBUG:certbot.main:Picked account: <Account(7e6706838b40e861c6a9727081528b10)>
+2017-08-09 18:08:50,096:DEBUG:root:Sending GET request to https://acme-v01.api.letsencrypt.org/directory.
+2017-08-09 18:08:50,098:INFO:requests.packages.urllib3.connectionpool:Starting new HTTPS connection (1): acme-v01.api.letsencrypt.org
+2017-08-09 18:08:51,349:DEBUG:requests.packages.urllib3.connectionpool:"GET /directory HTTP/1.1" 200 460
+2017-08-09 18:08:51,350:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Content-Type: application/json
+Content-Length: 460
+Boulder-Request-Id: VHehs5YwV2znqtwMPtrTX1rconFhI1h-wRskLpi48jM
+Replay-Nonce: 6sd8uNTUXxCpeFBRTn7FlQo9gcC2nvHkl3pslMPhWy0
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+Expires: Wed, 09 Aug 2017 18:09:35 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:35 GMT
+Connection: keep-alive
+
+{
+  "key-change": "https://acme-v01.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "terms-of-service": "https://letsencrypt.org/documents/LE-SA-v1.1.1-August-1-2016.pdf"
+  },
+  "new-authz": "https://acme-v01.api.letsencrypt.org/acme/new-authz",
+  "new-cert": "https://acme-v01.api.letsencrypt.org/acme/new-cert",
+  "new-reg": "https://acme-v01.api.letsencrypt.org/acme/new-reg",
+  "revoke-cert": "https://acme-v01.api.letsencrypt.org/acme/revoke-cert"
+}
+2017-08-09 18:08:51,350:INFO:certbot.main:Obtaining a new certificate
+2017-08-09 18:08:51,351:DEBUG:root:Requesting fresh nonce
+2017-08-09 18:08:51,351:DEBUG:root:Sending HEAD request to https://acme-v01.api.letsencrypt.org/acme/new-authz.
+2017-08-09 18:08:51,591:DEBUG:requests.packages.urllib3.connectionpool:"HEAD /acme/new-authz HTTP/1.1" 405 0
+2017-08-09 18:08:51,592:DEBUG:acme.client:Received response:
+HTTP 405
+Server: nginx
+Content-Type: application/problem+json
+Content-Length: 91
+Allow: POST
+Boulder-Request-Id: Ak2NVxs-UlxspYH71ZshmGnetC6ehPj0uqEGDc7IsQM
+Replay-Nonce: 7ahG0U3fe-uTHnour0EBMoSCHRDyhZdcyND3fvDX8uo
+Expires: Wed, 09 Aug 2017 18:09:36 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:36 GMT
+Connection: keep-alive
+
+
+2017-08-09 18:08:51,592:DEBUG:acme.client:Storing nonce: 7ahG0U3fe-uTHnour0EBMoSCHRDyhZdcyND3fvDX8uo
+2017-08-09 18:08:51,593:DEBUG:acme.client:JWS payload:
+{
+  "identifier": {
+    "type": "dns", 
+    "value": "mygnus.com"
+  }, 
+  "resource": "new-authz"
+}
+2017-08-09 18:08:51,599:DEBUG:root:Sending POST request to https://acme-v01.api.letsencrypt.org/acme/new-authz:
+{
+  "header": {
+    "alg": "RS256", 
+    "jwk": {
+      "e": "AQAB", 
+      "kty": "RSA", 
+      "n": "6QCwMPvSkO7DEs0sBLDYk74eFHQ8dNW-f_c70WS5kwg_IuwnrdAWFb3Glh4ChFVddZ5JoHs6q0x-88os-Z0_MjUSNG8FUTRGws4YOlBvec9eVYKxQojveuoV46qU9RQXOuKwghPlUT24WZyvYJeSJHFATonrZvNiV0bXbENe4tFaV-cecw-tqZf2FNmFzznSEZ5n3EC100uVZONTPllJb26NkrUQhJA1FjfmaVFt5k1jFebFmUuW-FUOOfW6Zy354CEwAP_jFimZHFEY4GH0z5wwDlWBe4gEly9whsJjL7us3_Qis-YLbqk2uQS9rhT-VoQ-0FiexsHP37Vafi5agQ"
+    }
+  }, 
+  "protected": "eyJub25jZSI6ICI3YWhHMFUzZmUtdVRIbm91cjBFQk1vU0NIUkR5aFpkY3lORDNmdkRYOHVvIn0", 
+  "payload": "ewogICJpZGVudGlmaWVyIjogewogICAgInR5cGUiOiAiZG5zIiwgCiAgICAidmFsdWUiOiAibXlnbnVzLmNvbSIKICB9LCAKICAicmVzb3VyY2UiOiAibmV3LWF1dGh6Igp9", 
+  "signature": "0O97fM6IORy8Pdu9Rm9eFp2hH3tleA469V1ym7r56YyhM7OuJivRM2pXXJcppL-Tts1gcPJjiAiUKSxBjyewwxHuPjpnLSLM-tvO5C3OJOt6Zzt62jK645T35AWN3gFMVHuBFkOgZDiYpMdXaXHBo5DXGrmilI8JTkELX6BID4ywfzyBHCqtmON9XCU1WwVL64pRtjBaX0fdLV3nWxEgGiCfDdTxG5j51WEiSmJ2zZ7TNsJPDhEzni297YUgIF-TdLde_RGcUP-oMtR927p7nGX1WiGHP1DQwB37VrnVQRCnoQ_x1jsmi90rL0y6Xm1HlF0cOeQs2IlbfaFMosIIow"
+}
+2017-08-09 18:08:51,883:DEBUG:requests.packages.urllib3.connectionpool:"POST /acme/new-authz HTTP/1.1" 201 998
+2017-08-09 18:08:51,883:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Content-Type: application/json
+Content-Length: 998
+Boulder-Request-Id: 8rEvoBQbmcRh_SWMJlRGtu3_BKaoANvoGPIABpuXCZs
+Boulder-Requester: 19677932
+Link: <https://acme-v01.api.letsencrypt.org/acme/new-cert>;rel="next"
+Location: https://acme-v01.api.letsencrypt.org/acme/authz/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24
+Replay-Nonce: oJOCwE7pG62V-Pb1alVNK7yxW8tkg-wpInRe8jCMrNw
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+Expires: Wed, 09 Aug 2017 18:09:36 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:36 GMT
+Connection: keep-alive
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "mygnus.com"
+  },
+  "status": "pending",
+  "expires": "2017-08-16T18:09:36.385274925Z",
+  "challenges": [
+    {
+      "type": "http-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476",
+      "token": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0"
+    },
+    {
+      "type": "tls-sni-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430477",
+      "token": "u-LJX0cnF0bfGJUSdLR9gX1fMKAS5YP-fZJqigOClMA"
+    },
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430478",
+      "token": "i8O3zoRQZncwf1PENqkCRiJjJtEe3Ew8gGI-xDd5xoE"
+    }
+  ],
+  "combinations": [
+    [
+      0
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ]
+  ]
+}
+2017-08-09 18:08:51,883:DEBUG:acme.client:Storing nonce: oJOCwE7pG62V-Pb1alVNK7yxW8tkg-wpInRe8jCMrNw
+2017-08-09 18:08:51,884:DEBUG:acme.client:JWS payload:
+{
+  "identifier": {
+    "type": "dns", 
+    "value": "www.mygnus.com"
+  }, 
+  "resource": "new-authz"
+}
+2017-08-09 18:08:51,890:DEBUG:root:Sending POST request to https://acme-v01.api.letsencrypt.org/acme/new-authz:
+{
+  "header": {
+    "alg": "RS256", 
+    "jwk": {
+      "e": "AQAB", 
+      "kty": "RSA", 
+      "n": "6QCwMPvSkO7DEs0sBLDYk74eFHQ8dNW-f_c70WS5kwg_IuwnrdAWFb3Glh4ChFVddZ5JoHs6q0x-88os-Z0_MjUSNG8FUTRGws4YOlBvec9eVYKxQojveuoV46qU9RQXOuKwghPlUT24WZyvYJeSJHFATonrZvNiV0bXbENe4tFaV-cecw-tqZf2FNmFzznSEZ5n3EC100uVZONTPllJb26NkrUQhJA1FjfmaVFt5k1jFebFmUuW-FUOOfW6Zy354CEwAP_jFimZHFEY4GH0z5wwDlWBe4gEly9whsJjL7us3_Qis-YLbqk2uQS9rhT-VoQ-0FiexsHP37Vafi5agQ"
+    }
+  }, 
+  "protected": "eyJub25jZSI6ICJvSk9Dd0U3cEc2MlYtUGIxYWxWTks3eXhXOHRrZy13cEluUmU4akNNck53In0", 
+  "payload": "ewogICJpZGVudGlmaWVyIjogewogICAgInR5cGUiOiAiZG5zIiwgCiAgICAidmFsdWUiOiAid3d3Lm15Z251cy5jb20iCiAgfSwgCiAgInJlc291cmNlIjogIm5ldy1hdXRoeiIKfQ", 
+  "signature": "onurq_0xa9SjcC9kFMNRoxqFGiZXovRPxIeU7uRzT0CJwfKJmgURqcDyuTOR3g4mpMO4cTel2HbtvBaf7B5W43TpPzkt9eXr6Z5EBc7UTczGktWA7H1F42jNEM-uivGTLApMKmRb_0cUqiRPrvA5miXOtV9TvYo5ziPHOcFRxfPfBZSHnHutsVeGQpiLvq2uFvFkVrwjQ2tLxh5HDE_SFU9hWuDauHwk-m42tdVHXrglZZD5B0VRsWE0BUW7DwMH_gQ841MjhyEJKgbAF1eFoGguxAzUXcaPy1lgabqsIm6Y8Uhw3sH-7zp2zfhKvCjYlGQTZbl7cmM88GB0FVgpJg"
+}
+2017-08-09 18:08:52,180:DEBUG:requests.packages.urllib3.connectionpool:"POST /acme/new-authz HTTP/1.1" 201 1002
+2017-08-09 18:08:52,181:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Content-Type: application/json
+Content-Length: 1002
+Boulder-Request-Id: 0wizpMxMpKBHi9XLkPzaQIoLqbz0HJ_juGEjjP9WJjU
+Boulder-Requester: 19677932
+Link: <https://acme-v01.api.letsencrypt.org/acme/new-cert>;rel="next"
+Location: https://acme-v01.api.letsencrypt.org/acme/authz/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4
+Replay-Nonce: q_qThRTXe68zIF4fafKQa41FSJOC2AKzUkErtJy_QFA
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+Expires: Wed, 09 Aug 2017 18:09:36 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:36 GMT
+Connection: keep-alive
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "www.mygnus.com"
+  },
+  "status": "pending",
+  "expires": "2017-08-16T18:09:36.693741977Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430503",
+      "token": "TXwyzpFCuewI0K3i2456MF_P6HCADGT8fS7PCPiVUNo"
+    },
+    {
+      "type": "http-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504",
+      "token": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA"
+    },
+    {
+      "type": "tls-sni-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430505",
+      "token": "w8PC14LJERKNGSaEkXYKYE4ZUfWYaL1a7_NkqJ-TKYk"
+    }
+  ],
+  "combinations": [
+    [
+      2
+    ],
+    [
+      1
+    ],
+    [
+      0
+    ]
+  ]
+}
+2017-08-09 18:08:52,181:DEBUG:acme.client:Storing nonce: q_qThRTXe68zIF4fafKQa41FSJOC2AKzUkErtJy_QFA
+2017-08-09 18:08:52,182:INFO:certbot.auth_handler:Performing the following challenges:
+2017-08-09 18:08:52,182:INFO:certbot.auth_handler:http-01 challenge for mygnus.com
+2017-08-09 18:08:52,182:INFO:certbot.auth_handler:http-01 challenge for www.mygnus.com
+2017-08-09 18:08:52,182:INFO:certbot.plugins.webroot:Using the webroot path /var/www/acme for all unmatched domains.
+2017-08-09 18:08:52,182:DEBUG:certbot.plugins.webroot:Creating root challenges validation dir at /var/www/acme/.well-known/acme-challenge
+2017-08-09 18:08:52,183:DEBUG:certbot.plugins.webroot:Creating root challenges validation dir at /var/www/acme/.well-known/acme-challenge
+2017-08-09 18:08:52,187:DEBUG:certbot.plugins.webroot:Attempting to save validation to /var/www/acme/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0
+2017-08-09 18:08:52,190:DEBUG:certbot.plugins.webroot:Attempting to save validation to /var/www/acme/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA
+2017-08-09 18:08:52,191:INFO:certbot.auth_handler:Waiting for verification...
+2017-08-09 18:08:52,191:DEBUG:acme.client:JWS payload:
+{
+  "keyAuthorization": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g", 
+  "type": "http-01", 
+  "resource": "challenge"
+}
+2017-08-09 18:08:52,195:DEBUG:root:Sending POST request to https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476:
+{
+  "header": {
+    "alg": "RS256", 
+    "jwk": {
+      "e": "AQAB", 
+      "kty": "RSA", 
+      "n": "6QCwMPvSkO7DEs0sBLDYk74eFHQ8dNW-f_c70WS5kwg_IuwnrdAWFb3Glh4ChFVddZ5JoHs6q0x-88os-Z0_MjUSNG8FUTRGws4YOlBvec9eVYKxQojveuoV46qU9RQXOuKwghPlUT24WZyvYJeSJHFATonrZvNiV0bXbENe4tFaV-cecw-tqZf2FNmFzznSEZ5n3EC100uVZONTPllJb26NkrUQhJA1FjfmaVFt5k1jFebFmUuW-FUOOfW6Zy354CEwAP_jFimZHFEY4GH0z5wwDlWBe4gEly9whsJjL7us3_Qis-YLbqk2uQS9rhT-VoQ-0FiexsHP37Vafi5agQ"
+    }
+  }, 
+  "protected": "eyJub25jZSI6ICJxX3FUaFJUWGU2OHpJRjRmYWZLUWE0MUZTSk9DMkFLelVrRXJ0SnlfUUZBIn0", 
+  "payload": "ewogICJrZXlBdXRob3JpemF0aW9uIjogIkFTbHdrVXNaZWh5S2JnQndfUDQxcGV0Y01xNmI1VW5EWFN2MG0yb0ozYzAuSThRNTNQTVJnTS1KTFJfUFJETEdBZDVRdlhqTnN1S0J0Y0t6SVkyRmQ5ZyIsIAogICJ0eXBlIjogImh0dHAtMDEiLCAKICAicmVzb3VyY2UiOiAiY2hhbGxlbmdlIgp9", 
+  "signature": "3xTntHlT0qBMrQNbo0CPBNZQ61rhv9iD7GQ0p92XtSxreGTdVoN3SbWBVPGrKlglQk9_qEE5cMCY5fqP5ojfghMKP3FPXV_d_FEzMHeQWDqRkDUbbhoPuHmwOTY0sDmcd_m_1LLRUQAmHQycsUKSUxyuMuRm4hQv1KEEAKvgVKyGPq8cZkmW4HHvH324wTO50cfxcp3kxZR4u_IJNRPOn8GsbR7rbUF8N0mKerf3RQdfNc2FVUhAOxFIGVPPPp1fz_NT9tVQdIaYBNTGIsZNUpiZkY2zDcTHF046IWRP3C3KOBaqbAWNroqnJbFfCRYO4wDDThqQxbBIBCWiXBsWEw"
+}
+2017-08-09 18:08:52,469:DEBUG:requests.packages.urllib3.connectionpool:"POST /acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476 HTTP/1.1" 202 336
+2017-08-09 18:08:52,469:DEBUG:acme.client:Received response:
+HTTP 202
+Server: nginx
+Content-Type: application/json
+Content-Length: 336
+Boulder-Request-Id: Clv_7z52w28HV3kFJgiZkRPIdDJEAvvyiLwkbmMyrHU
+Boulder-Requester: 19677932
+Link: <https://acme-v01.api.letsencrypt.org/acme/authz/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24>;rel="up"
+Location: https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476
+Replay-Nonce: 1oHN8SwNTuRAu0fjAE5-UuvqZsGGCrF_dF3vEdNn68Q
+Expires: Wed, 09 Aug 2017 18:09:37 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:37 GMT
+Connection: keep-alive
+
+{
+  "type": "http-01",
+  "status": "pending",
+  "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476",
+  "token": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0",
+  "keyAuthorization": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g"
+}
+2017-08-09 18:08:52,470:DEBUG:acme.client:Storing nonce: 1oHN8SwNTuRAu0fjAE5-UuvqZsGGCrF_dF3vEdNn68Q
+2017-08-09 18:08:52,470:DEBUG:acme.client:JWS payload:
+{
+  "keyAuthorization": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g", 
+  "type": "http-01", 
+  "resource": "challenge"
+}
+2017-08-09 18:08:52,475:DEBUG:root:Sending POST request to https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504:
+{
+  "header": {
+    "alg": "RS256", 
+    "jwk": {
+      "e": "AQAB", 
+      "kty": "RSA", 
+      "n": "6QCwMPvSkO7DEs0sBLDYk74eFHQ8dNW-f_c70WS5kwg_IuwnrdAWFb3Glh4ChFVddZ5JoHs6q0x-88os-Z0_MjUSNG8FUTRGws4YOlBvec9eVYKxQojveuoV46qU9RQXOuKwghPlUT24WZyvYJeSJHFATonrZvNiV0bXbENe4tFaV-cecw-tqZf2FNmFzznSEZ5n3EC100uVZONTPllJb26NkrUQhJA1FjfmaVFt5k1jFebFmUuW-FUOOfW6Zy354CEwAP_jFimZHFEY4GH0z5wwDlWBe4gEly9whsJjL7us3_Qis-YLbqk2uQS9rhT-VoQ-0FiexsHP37Vafi5agQ"
+    }
+  }, 
+  "protected": "eyJub25jZSI6ICIxb0hOOFN3TlR1UkF1MGZqQUU1LVV1dnFac0dHQ3JGX2RGM3ZFZE5uNjhRIn0", 
+  "payload": "ewogICJrZXlBdXRob3JpemF0aW9uIjogIlhPMVhscUlmUDI5b1ZYeElkSjBuelJPNGE0djctaU5LWElqQW9WUVREYkEuSThRNTNQTVJnTS1KTFJfUFJETEdBZDVRdlhqTnN1S0J0Y0t6SVkyRmQ5ZyIsIAogICJ0eXBlIjogImh0dHAtMDEiLCAKICAicmVzb3VyY2UiOiAiY2hhbGxlbmdlIgp9", 
+  "signature": "2Iz0uNsD8Lpt7XaTg0sAXINnrxBJu0O7Mc79VxJd2KAeXhHFzMHpA0Htyi-6IqX-0BHIC93yuUoc40q6hKuLtDKsxF85In5B5cj5dlazazce85nJpk1BvPAwhFOTISI0dyqpNkfnjuH5eK6DN5NQ-RooPan9os08A0er4b_Swmsn75nKgSoF_G4TYmhLLVc1z-vU8VzQ9rULmU3evZshuaRGYBPWd_cc9PUN7CEnGa2IfMKW0XJqSzGgeY_14lvK70gvF1pG1TYKgAPCtmF0fKdRbtg2zI35ZUqTJKtdyFu9MIAvZxOmcDH2s0M83z7gPbsvMISEGHkrDtTeDT8I8Q"
+}
+2017-08-09 18:08:52,740:DEBUG:requests.packages.urllib3.connectionpool:"POST /acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504 HTTP/1.1" 202 336
+2017-08-09 18:08:52,741:DEBUG:acme.client:Received response:
+HTTP 202
+Server: nginx
+Content-Type: application/json
+Content-Length: 336
+Boulder-Request-Id: _yBPbqT-XlrLEkyJzvGRc1Nhh5BG6ZmOwEXTcsQiOL4
+Boulder-Requester: 19677932
+Link: <https://acme-v01.api.letsencrypt.org/acme/authz/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4>;rel="up"
+Location: https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504
+Replay-Nonce: _0w4AoxOB7BLUiNxHq40wW-uSvKBvnyPEEgMdwao_jQ
+Expires: Wed, 09 Aug 2017 18:09:37 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:37 GMT
+Connection: keep-alive
+
+{
+  "type": "http-01",
+  "status": "pending",
+  "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504",
+  "token": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA",
+  "keyAuthorization": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g"
+}
+2017-08-09 18:08:52,741:DEBUG:acme.client:Storing nonce: _0w4AoxOB7BLUiNxHq40wW-uSvKBvnyPEEgMdwao_jQ
+2017-08-09 18:08:55,744:DEBUG:root:Sending GET request to https://acme-v01.api.letsencrypt.org/acme/authz/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4.
+2017-08-09 18:08:56,046:DEBUG:requests.packages.urllib3.connectionpool:"GET /acme/authz/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4 HTTP/1.1" 200 2292
+2017-08-09 18:08:56,047:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Content-Type: application/json
+Boulder-Request-Id: MBgAN08uzEp8MBq1JwgReTljWV7xvMuV86H5325hVnw
+Link: <https://acme-v01.api.letsencrypt.org/acme/new-cert>;rel="next"
+Replay-Nonce: MMyAxwT7QuwYeDanLTAF_1hjYehLkhZQRxU5D7Q9Ua8
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+Expires: Wed, 09 Aug 2017 18:09:40 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:40 GMT
+Content-Length: 2292
+Connection: keep-alive
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "www.mygnus.com"
+  },
+  "status": "invalid",
+  "expires": "2017-08-16T18:09:36Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430503",
+      "token": "TXwyzpFCuewI0K3i2456MF_P6HCADGT8fS7PCPiVUNo"
+    },
+    {
+      "type": "http-01",
+      "status": "invalid",
+      "error": {
+        "type": "urn:acme:error:unauthorized",
+        "detail": "Invalid response from http://www.mygnus.com/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA: \"\u003c!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"\u003e\n\u003chtml\u003e\u003chead\u003e\n\u003ctitle\u003e404 Not Found\u003c/title\u003e\n\u003c/head\u003e\u003cbody\u003e\n\u003ch1\u003eNot Found\u003c/h1\u003e\n\u003cp\"",
+        "status": 403
+      },
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430504",
+      "token": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA",
+      "keyAuthorization": "XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g",
+      "validationRecord": [
+        {
+          "url": "https://mygnus.com/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA",
+          "hostname": "mygnus.com",
+          "port": "443",
+          "addressesResolved": [
+            "142.54.186.2"
+          ],
+          "addressUsed": "142.54.186.2",
+          "addressesTried": []
+        },
+        {
+          "url": "http://www.mygnus.com/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA",
+          "hostname": "www.mygnus.com",
+          "port": "80",
+          "addressesResolved": [
+            "142.54.186.2"
+          ],
+          "addressUsed": "142.54.186.2",
+          "addressesTried": []
+        }
+      ]
+    },
+    {
+      "type": "tls-sni-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/G_AloFRBNC6m8EH97poh-a5JDFwq9k_UYjhmY2O0rF4/1717430505",
+      "token": "w8PC14LJERKNGSaEkXYKYE4ZUfWYaL1a7_NkqJ-TKYk"
+    }
+  ],
+  "combinations": [
+    [
+      2
+    ],
+    [
+      1
+    ],
+    [
+      0
+    ]
+  ]
+}
+2017-08-09 18:08:56,048:DEBUG:root:Sending GET request to https://acme-v01.api.letsencrypt.org/acme/authz/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24.
+2017-08-09 18:08:56,307:DEBUG:requests.packages.urllib3.connectionpool:"GET /acme/authz/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24 HTTP/1.1" 200 2276
+2017-08-09 18:08:56,308:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Content-Type: application/json
+Boulder-Request-Id: nRc9SCuVkI6zqqBDmSGBcshFTRo53XZ6ZTpcQX-kJAo
+Link: <https://acme-v01.api.letsencrypt.org/acme/new-cert>;rel="next"
+Replay-Nonce: FWysXdqS-uLdPdhbrBxVJLvzAoFDiuPXKylwDNpAdf4
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+Expires: Wed, 09 Aug 2017 18:09:40 GMT
+Cache-Control: max-age=0, no-cache, no-store
+Pragma: no-cache
+Date: Wed, 09 Aug 2017 18:09:40 GMT
+Content-Length: 2276
+Connection: keep-alive
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "mygnus.com"
+  },
+  "status": "invalid",
+  "expires": "2017-08-16T18:09:36Z",
+  "challenges": [
+    {
+      "type": "http-01",
+      "status": "invalid",
+      "error": {
+        "type": "urn:acme:error:unauthorized",
+        "detail": "Invalid response from http://mygnus.com/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0: \"\u003c!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"\u003e\n\u003chtml\u003e\u003chead\u003e\n\u003ctitle\u003e404 Not Found\u003c/title\u003e\n\u003c/head\u003e\u003cbody\u003e\n\u003ch1\u003eNot Found\u003c/h1\u003e\n\u003cp\"",
+        "status": 403
+      },
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430476",
+      "token": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0",
+      "keyAuthorization": "ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0.I8Q53PMRgM-JLR_PRDLGAd5QvXjNsuKBtcKzIY2Fd9g",
+      "validationRecord": [
+        {
+          "url": "https://mygnus.com/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0",
+          "hostname": "mygnus.com",
+          "port": "443",
+          "addressesResolved": [
+            "142.54.186.2"
+          ],
+          "addressUsed": "142.54.186.2",
+          "addressesTried": []
+        },
+        {
+          "url": "http://mygnus.com/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0",
+          "hostname": "mygnus.com",
+          "port": "80",
+          "addressesResolved": [
+            "142.54.186.2"
+          ],
+          "addressUsed": "142.54.186.2",
+          "addressesTried": []
+        }
+      ]
+    },
+    {
+      "type": "tls-sni-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430477",
+      "token": "u-LJX0cnF0bfGJUSdLR9gX1fMKAS5YP-fZJqigOClMA"
+    },
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "uri": "https://acme-v01.api.letsencrypt.org/acme/challenge/cLm35nzCoUlralh6SIhhlTJHt_Q-b7xDR8BoYB1xu24/1717430478",
+      "token": "i8O3zoRQZncwf1PENqkCRiJjJtEe3Ew8gGI-xDd5xoE"
+    }
+  ],
+  "combinations": [
+    [
+      0
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ]
+  ]
+}
+2017-08-09 18:08:56,309:DEBUG:certbot.reporter:Reporting to user: The following errors were reported by the server:
+
+Domain: mygnus.com
+Type:   unauthorized
+Detail: Invalid response from http://mygnus.com/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0: "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p"
+
+Domain: www.mygnus.com
+Type:   unauthorized
+Detail: Invalid response from http://www.mygnus.com/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA: "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p"
+
+To fix these errors, please make sure that your domain name was entered correctly and the DNS A record(s) for that domain contain(s) the right IP address.
+2017-08-09 18:08:56,309:INFO:certbot.auth_handler:Cleaning up challenges
+2017-08-09 18:08:56,309:DEBUG:certbot.plugins.webroot:Removing /var/www/acme/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0
+2017-08-09 18:08:56,310:DEBUG:certbot.plugins.webroot:Removing /var/www/acme/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA
+2017-08-09 18:08:56,310:DEBUG:certbot.plugins.webroot:All challenges cleaned up, removing /var/www/acme/.well-known/acme-challenge
+2017-08-09 18:08:56,311:DEBUG:certbot.main:Exiting abnormally:
+Traceback (most recent call last):
+  File "/usr/bin/certbot", line 11, in <module>
+    load_entry_point('certbot==0.10.2', 'console_scripts', 'certbot')()
+  File "/usr/lib/python2.7/dist-packages/certbot/main.py", line 849, in main
+    return config.func(config, plugins)
+  File "/usr/lib/python2.7/dist-packages/certbot/main.py", line 626, in obtain_cert
+    action, _ = _auth_from_available(le_client, config, domains, certname, lineage)
+  File "/usr/lib/python2.7/dist-packages/certbot/main.py", line 107, in _auth_from_available
+    lineage = le_client.obtain_and_enroll_certificate(domains, certname)
+  File "/usr/lib/python2.7/dist-packages/certbot/client.py", line 291, in obtain_and_enroll_certificate
+    certr, chain, key, _ = self.obtain_certificate(domains)
+  File "/usr/lib/python2.7/dist-packages/certbot/client.py", line 262, in obtain_certificate
+    self.config.allow_subset_of_names)
+  File "/usr/lib/python2.7/dist-packages/certbot/auth_handler.py", line 77, in get_authorizations
+    self._respond(resp, best_effort)
+  File "/usr/lib/python2.7/dist-packages/certbot/auth_handler.py", line 134, in _respond
+    self._poll_challenges(chall_update, best_effort)
+  File "/usr/lib/python2.7/dist-packages/certbot/auth_handler.py", line 198, in _poll_challenges
+    raise errors.FailedChallenges(all_failed_achalls)
+FailedChallenges: Failed authorization procedure. mygnus.com (http-01): urn:acme:error:unauthorized :: The client lacks sufficient authorization :: Invalid response from http://mygnus.com/.well-known/acme-challenge/ASlwkUsZehyKbgBw_P41petcMq6b5UnDXSv0m2oJ3c0: "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p", www.mygnus.com (http-01): urn:acme:error:unauthorized :: The client lacks sufficient authorization :: Invalid response from http://www.mygnus.com/.well-known/acme-challenge/XO1XlqIfP29oVXxIdJ0nzRO4a4v7-iNKXIjAoVQTDbA: "<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p"
+
